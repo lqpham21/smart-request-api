@@ -1,10 +1,20 @@
 using SmartRequest.Data;
 using Microsoft.EntityFrameworkCore;
+using SmartRequest.Repositories;
+using SmartRequest.Services;
+
 
 var builder = WebApplication.CreateBuilder(args);
-
+// Register controllers
+builder.Services.AddControllers();  
+// Register database
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+// Register dependency injection
+builder.Services.AddScoped<IRequestRepository, RequestRepository>();
+builder.Services.AddScoped<IRequestService, RequestService>();
+
+
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -21,6 +31,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.MapControllers();
 
 var summaries = new[]
 {

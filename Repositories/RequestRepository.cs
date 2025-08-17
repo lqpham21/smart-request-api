@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using SmartRequest.Data;
 using SmartRequest.Models;
+using Microsoft.Data.SqlClient;
+
 
 namespace SmartRequest.Repositories
 {
@@ -48,6 +50,14 @@ namespace SmartRequest.Repositories
             _context.Requests.Remove(request);
             await _context.SaveChangesAsync();
             return true;
+        }
+
+        public async Task<IEnumerable<Request>> GetByStatusAsync(string status)
+        {
+            var statusParam = new SqlParameter("@Status", status);
+            return await _context.Requests
+            .FromSqlRaw("EXECUTE dbo.sp_GetRequestsByStatus @Status", statusParam)
+            .ToListAsync();
         }
     }
 }

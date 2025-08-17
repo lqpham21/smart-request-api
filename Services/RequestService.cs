@@ -1,53 +1,33 @@
-using Microsoft.EntityFrameworkCore;
-using SmartRequest.Data;
 using SmartRequest.Models;
+using SmartRequest.Repositories;
 
 namespace SmartRequest.Services
 {
     public class RequestService : IRequestService
     {
-        private readonly AppDbContext _context;
+        private readonly IRequestRepository _repository;
 
-        public RequestService(AppDbContext context)
+        public RequestService(IRequestRepository repository)
         {
-            _context = context;
+            _repository = repository;
         }
 
         public async Task<IEnumerable<Request>> GetAllAsync() =>
-            await _context.Requests.ToListAsync();
+            await _repository.GetAllAsync();
 
         public async Task<Request?> GetByIdAsync(int id) =>
-            await _context.Requests.FindAsync(id);
+            await _repository.GetByIdAsync(id);
 
-        public async Task<Request> CreateAsync(Request request)
-        {
-            _context.Requests.Add(request);
-            await _context.SaveChangesAsync();
-            return request;
-        }
+        public async Task<Request> CreateAsync(Request request) =>
+            await _repository.CreateAsync(request);
 
-        public async Task<Request?> UpdateAsync(int id, Request request)
-        {
-            var existing = await _context.Requests.FindAsync(id);
-            if (existing == null) return null;
+        public async Task<Request?> UpdateAsync(int id, Request request) =>
+            await _repository.UpdateAsync(id, request);
 
-            existing.Title = request.Title;
-            existing.Description = request.Description;
-            existing.Category = request.Category;
-            existing.Status = request.Status;
-            await _context.SaveChangesAsync();
+        public async Task<bool> DeleteAsync(int id) =>
+            await _repository.DeleteAsync(id);
 
-            return existing;
-        }
-
-        public async Task<bool> DeleteAsync(int id)
-        {
-            var request = await _context.Requests.FindAsync(id);
-            if (request == null) return false;
-
-            _context.Requests.Remove(request);
-            await _context.SaveChangesAsync();
-            return true;
-        }
+        public async Task<IEnumerable<Request>> GetByStatusAsync(string status) =>
+            await _repository.GetByStatusAsync(status);
     }
 }

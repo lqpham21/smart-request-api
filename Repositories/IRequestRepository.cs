@@ -9,5 +9,6 @@ namespace SmartRequest.Repositories
         Task<Request> CreateAsync(Request request);
         Task<Request?> UpdateAsync(int id, Request request);
         Task<bool> DeleteAsync(int id);
+        Task<IEnumerable<Request>> GetByStatusAsync(string status);
     }
 }

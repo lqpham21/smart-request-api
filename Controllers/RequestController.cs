@@ -52,5 +52,13 @@ namespace SmartRequest.Controllers
             if (!success) return NotFound();
             return NoContent();
         }
+
+        [HttpGet("status/{status}")]
+        public async Task<ActionResult<IEnumerable<Request>>> GetByStatus(string status)
+        {
+            var requests = await _service.GetByStatusAsync(status);
+            return Ok(requests);
+        }
+
     }
 }

@@ -60,5 +60,11 @@ namespace SmartRequest.Controllers
             return Ok(requests);
         }
 
+        [HttpGet("recent/{daysAgo}")]
+        public async Task<ActionResult<IEnumerable<Request>>> GetRecent(int daysAgo)
+        {
+            var results = await _service.GetRecentAsync(daysAgo);
+            return Ok(results);
+        }
     }
 }

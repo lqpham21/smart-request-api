@@ -22,24 +22,24 @@ namespace SmartRequest.Repositories
             await _context.Requests.FindAsync(id);
 
         public async Task<Request> CreateAsync(Request request)
-{
-    var sql = @"
-        INSERT INTO Requests (Title, Description, Category, Status, CreatedAt)
-        VALUES (@Title, @Description, @Category, @Status, @CreatedAt);
-    ";
+        {
+            var sql = @"
+            INSERT INTO Requests (Title, Description, Category, Status, CreatedAt)
+            VALUES (@Title, @Description, @Category, @Status, @CreatedAt);
+            ";
 
-    var parameters = new[]
-    {
-        new SqlParameter("@Title", request.Title ?? (object)DBNull.Value),
-        new SqlParameter("@Description", request.Description ?? (object)DBNull.Value),
-        new SqlParameter("@Category", request.Category ?? (object)DBNull.Value),
-        new SqlParameter("@Status", request.Status ?? (object)DBNull.Value),
-        new SqlParameter("@CreatedAt", request.CreatedAt)
-    };
+            var parameters = new[]
+            {
+                new SqlParameter("@Title", request.Title ?? (object)DBNull.Value),
+                new SqlParameter("@Description", request.Description ?? (object)DBNull.Value),
+                new SqlParameter("@Category", request.Category ?? (object)DBNull.Value),
+                new SqlParameter("@Status", request.Status ?? (object)DBNull.Value),
+                new SqlParameter("@CreatedAt", request.CreatedAt)
+            };
 
-    await _context.Database.ExecuteSqlRawAsync(sql, parameters);
-    return request;
-}
+            await _context.Database.ExecuteSqlRawAsync(sql, parameters);
+            return request;
+        }
 
 
         public async Task<Request?> UpdateAsync(int id, Request request)
@@ -71,6 +71,14 @@ namespace SmartRequest.Repositories
             var statusParam = new SqlParameter("@Status", status);
             return await _context.Requests
             .FromSqlRaw("EXECUTE dbo.sp_GetRequestsByStatus @Status", statusParam)
+            .ToListAsync();
+        }
+        
+        public async Task<IEnumerable<Request>> GetRecentAsync(int daysAgo)
+        {
+            var param = new SqlParameter("@DaysAgo", daysAgo);
+            return await _context.Requests
+            .FromSqlRaw("SELECT * FROM fn_GetRecentRequests(@DaysAgo)", param)
             .ToListAsync();
         }
     }

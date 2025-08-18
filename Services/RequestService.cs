@@ -19,11 +19,10 @@ namespace SmartRequest.Services
             await _repository.GetByIdAsync(id);
 
         public async Task<Request> CreateAsync(Request request)
-{
-    request.CreatedAt = DateTime.UtcNow; // <-- Set timestamp before saving
-    return await _repository.CreateAsync(request);
-}
-
+        {
+            request.CreatedAt = DateTime.UtcNow; // <-- Set timestamp before saving
+            return await _repository.CreateAsync(request);
+        }
 
         public async Task<Request?> UpdateAsync(int id, Request request) =>
             await _repository.UpdateAsync(id, request);
@@ -33,5 +32,8 @@ namespace SmartRequest.Services
 
         public async Task<IEnumerable<Request>> GetByStatusAsync(string status) =>
             await _repository.GetByStatusAsync(status);
+        public async Task<IEnumerable<Request>> GetRecentAsync(int daysAgo) =>
+            await _repository.GetRecentAsync(daysAgo);
+
     }
 }

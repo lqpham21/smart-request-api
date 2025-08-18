@@ -22,11 +22,25 @@ namespace SmartRequest.Repositories
             await _context.Requests.FindAsync(id);
 
         public async Task<Request> CreateAsync(Request request)
-        {
-            _context.Requests.Add(request);
-            await _context.SaveChangesAsync();
-            return request;
-        }
+{
+    var sql = @"
+        INSERT INTO Requests (Title, Description, Category, Status, CreatedAt)
+        VALUES (@Title, @Description, @Category, @Status, @CreatedAt);
+    ";
+
+    var parameters = new[]
+    {
+        new SqlParameter("@Title", request.Title ?? (object)DBNull.Value),
+        new SqlParameter("@Description", request.Description ?? (object)DBNull.Value),
+        new SqlParameter("@Category", request.Category ?? (object)DBNull.Value),
+        new SqlParameter("@Status", request.Status ?? (object)DBNull.Value),
+        new SqlParameter("@CreatedAt", request.CreatedAt)
+    };
+
+    await _context.Database.ExecuteSqlRawAsync(sql, parameters);
+    return request;
+}
+
 
         public async Task<Request?> UpdateAsync(int id, Request request)
         {
